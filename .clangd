@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-ffreestanding, -nostdlib, -nostdinc, -m32]

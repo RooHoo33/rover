@@ -1,0 +1,50 @@
+OBJECTS = loader.o kmain.o
+
+# Use the cross-compiler instead of host gcc
+CC = x86_64-elf-gcc
+# Use the corresponding 32-bit cross-linker
+LD = x86_64-elf-ld
+
+# -m32 isn't strictly needed when using i386-elf-gcc, but keeping it won't hurt.
+CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
+         -nodefaultlibs -Wall -Wextra -Werror -g
+
+LDFLAGS = -T link.ld -m elf_i386 -g
+AS = nasm
+ASFLAGS = -f elf32 -g
+
+all: kernel.elf os.iso
+
+kernel.elf: $(OBJECTS)
+	$(LD) $(LDFLAGS) $(OBJECTS) -o kernel.elf
+
+os.iso: kernel.elf
+	mkdir -p iso/boot/grub
+	cp kernel.elf iso/boot/kernel.elf
+	# Swapped to xorriso using the mkisofs compatibility layer for Mac
+	xorriso -as mkisofs \
+                -R                              \
+                -b boot/grub/stage2_eltorito    \
+                -no-emul-boot                   \
+                -boot-load-size 4               \
+                -A os                           \
+                -input-charset utf8             \
+                -quiet                          \
+                -boot-info-table                \
+                -o os.iso                       \
+                iso
+
+run: os.iso
+	qemu-system-i386 -boot d -cdrom os.iso -m 128M -serial stdio -s -S
+	#bochs -f bochsrc.txt -q
+
+# Note: Removed -c from CFLAGS and put it directly in the pattern rule. 
+# This is standard Makefile practice so you can reuse CFLAGS for linking if needed.
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.s
+	$(AS) $(ASFLAGS) $< -o $@
+
+clean:
+	rm -rf *.o kernel.elf os.iso

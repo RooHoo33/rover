@@ -1,0 +1,11 @@
+megs:            32
+display_library: vncsrv
+ata0-master:     type=cdrom, path=os.iso, status=inserted
+boot:            cdrom
+log:             bochslog.txt
+clock:           sync=realtime, time0=local
+cpu:             count=1, ips=1000000
+keyboard: type=mf, serial_delay=150, paste_delay=100000
+#gdbstub:         enabled=1, port=1234, text_base=0, data_base=0, bss_base=0
+magic_break: enabled=1
+com3: enabled=1, mode=null

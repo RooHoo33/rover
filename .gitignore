@@ -1,0 +1,7 @@
+# compiled files
+*.o
+*.obj
+*.elf
+*.iso
+
+.DS_Store

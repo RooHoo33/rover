@@ -1,0 +1,40 @@
+# i386-dev.yaml
+arch: "x86_64" # Emulate an Intel environment on Apple Silicon
+
+# Define the Ubuntu image to download and boot
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+    arch: "x86_64"
+
+# Multi-arch support and essential compilation tools for x86 kernel development
+provision:
+  - mode: system
+    script: |
+      dpkg --add-architecture i386
+      apt-get update
+      apt-get install -y \
+        build-essential \
+        gcc-multilib \
+        g++-multilib \
+        libc6:i386 \
+        gdb \
+        python3-pip \
+        python3-venv \
+        pipx \
+        qemu-system-x86
+
+  - mode: user
+    script: |
+      pipx install gdbgui
+      echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+
+# Expose gdbgui's default port from the VM directly to your Mac
+portForwards:
+  - guestPort: 5000
+    hostPort: 5000
+# Add this block to your i386-dev.yaml
+mounts:
+  - location: "~"
+    writable: true    # <-- This explicitly unlocks write access
+  - location: "/tmp/lima"
+    writable: true
