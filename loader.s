@@ -3,7 +3,7 @@ global loader
 extern kmain
 
 MAGIC_NUMBER equ 0x1BADB002    
-FLAGS        equ 0x00000001    ; Bit 0: Align modules on page boundaries
+FLAGS        equ 0x00000003    ; Bit 0: Align modules on page boundaries
 CHECKSUM     equ -(MAGIC_NUMBER + FLAGS)
 
 section .multiboot
@@ -36,6 +36,8 @@ loader:
 
 .main:
     sub esp, 8
+    push ebx
+    push eax
     call kmain                  ; 6. Execution safely hands off to C here
     add esp, 8
     mov eax, 0xCAFEBABE         

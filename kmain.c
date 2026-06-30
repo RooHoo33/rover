@@ -5,13 +5,16 @@
 #include "isr.h"
 #include "keyboard.h"
 #include "klogger.h"
+#include "memory.h"
 #include "stdlib.h"
 
 // Define the screen dimensions for standard VGA text mode
 // #define VGA_WIDTH 80
 // #define VGA_HEIGHT 25
 
-void kmain(void) {
+void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
+  int a = magic_number + 1;
+  a++;
   clear_screen();
   initGdt();
   initIdt();
@@ -20,6 +23,8 @@ void kmain(void) {
   // timer_install();
   keyboard_install();
   __asm__ __volatile__("sti"); // re-enable isr inturupts
+  //
+  init_memory(boot_info);
   // unsigned short *vga_buffer = (unsigned short *)0xB8000;
 
   // unsigned short green_pixel = 0x2000 | ' ';
