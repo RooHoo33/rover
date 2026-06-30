@@ -3,5 +3,6 @@
 *.obj
 *.elf
 *.iso
+bochslog.txt
 
 .DS_Store

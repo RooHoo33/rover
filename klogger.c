@@ -4,6 +4,7 @@
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
+#include "stdarg.h"
 
 char screen_buffer[VGA_HEIGHT][VGA_WIDTH];
 int current_line = 0;
@@ -61,4 +62,78 @@ void write_stdout(char *output) {
     }
   }
   print_screen();
+}
+int uint_to_string(uint32_t value, char *output) {
+  if (value == 0) {
+    output[0] = '0';
+    return 1;
+  }
+  char reverse_buffer[32] = {0};
+  int i = 0;
+  while (value > 0) {
+    reverse_buffer[i++] = (value % 10) + '0';
+    value /= 10;
+  }
+  for (int j = 0; j < i; j++) {
+    output[j] = reverse_buffer[i - j - 1];
+  }
+  return i;
+}
+
+int string_to_string(char *value, char *output) {
+  int i = 0;
+  while (*value != '\0') {
+    output[i] = *value;
+    value++;
+    i++;
+  }
+  return i;
+}
+
+int hex_to_string(uint32_t value, char *output) {
+  const char hex_chars[] = "0123456789ABCDEF";
+
+  for (int i = 7; i >= 0; i--) {
+    int nibble = value & 0x0F;
+
+    output[i] = hex_chars[nibble];
+
+    value >>= 4;
+  }
+  return 8;
+}
+
+void printf(char *template, ...) {
+  va_list args;
+  va_start(args, template);
+#define output_size 256
+  char output_buffer[output_size] = {0};
+  char *output = (char *)&output_buffer;
+  while (*template != '\0') {
+    if (*template == '%') {
+      template++;
+      if (*template == 'd') {
+        int text_writtern = uint_to_string(va_arg(args, uint32_t), output);
+        output += text_writtern;
+        template++;
+      } else if (*template == 's') {
+        int text_writtern = string_to_string(va_arg(args, char *), output);
+        output += text_writtern;
+        template++;
+      } else if (*template == 'x') {
+        int text_writtern = hex_to_string(va_arg(args, uint32_t), output);
+        output += text_writtern;
+        template++;
+      } else if (*template == '%') {
+        *output = '%';
+        output++;
+        template++;
+      }
+    } else {
+      *output = *template;
+      template++;
+      output++;
+    }
+  }
+  write_stdout(output_buffer);
 }

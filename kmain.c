@@ -4,6 +4,7 @@
 #include "irq.h"
 #include "isr.h"
 #include "keyboard.h"
+#include "klogger.h"
 #include "stdlib.h"
 
 // Define the screen dimensions for standard VGA text mode
@@ -26,6 +27,10 @@ void kmain(void) {
   //__builtin_trap();
   BOCHS_BREAK();
   puts("JACK IS SUPER COOL");
+  printf("Hi %d. This is super cool!!!. And He says: %s...\n", 102,
+         "wow this is cool");
+  printf("And we got hex: %x!\n", 0xCAFEBAB1);
+  printf("And a literal %%.");
   // Loop through every row and column to fill the screen
   // for (int y = 0; y < VGA_HEIGHT; y++) {
   //  for (int x = 0; x < VGA_WIDTH; x++) {

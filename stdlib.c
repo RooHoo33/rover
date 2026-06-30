@@ -58,7 +58,7 @@ void outportb(unsigned short port, unsigned char data) {
 void memcpy(void *dest, void *src, size_t n) {
   char *dest_cast = (char *)dest;
   char *src_cast = (char *)src;
-  for (unsigned int i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++) {
     dest_cast[i] = src_cast[i];
   }
 }
