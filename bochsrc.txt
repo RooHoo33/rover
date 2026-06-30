@@ -1,4 +1,4 @@
-megs:            32
+megs:            3200
 display_library: vncsrv
 ata0-master:     type=cdrom, path=os.iso, status=inserted
 boot:            cdrom
