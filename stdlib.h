@@ -32,3 +32,4 @@ unsigned char inportb(unsigned short _port);
 void outportb(unsigned short _port, unsigned char _data);
 
 void memcpy(void *dest, void *src, size_t n);
+void memset(void *ptr, int value, size_t num);

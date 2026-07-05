@@ -62,3 +62,10 @@ void memcpy(void *dest, void *src, size_t n) {
     dest_cast[i] = src_cast[i];
   }
 }
+
+void memset(void *ptr, int value, size_t size) {
+  char *prt_cast = (char *)ptr;
+  for (size_t i = 0; i < size; i++) {
+    prt_cast[i] = value;
+  }
+}

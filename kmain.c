@@ -13,8 +13,7 @@
 // #define VGA_HEIGHT 25
 
 void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
-  int a = magic_number + 1;
-  a++;
+  printf("Magic number: %x\n", magic_number);
   clear_screen();
   initGdt();
   initIdt();
@@ -24,7 +23,11 @@ void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
   keyboard_install();
   __asm__ __volatile__("sti"); // re-enable isr inturupts
   //
-  init_memory(boot_info);
+  //
+  //
+  uint32_t mod1 = *(uint32_t *)(boot_info->mods_addr + 4);
+  uint32_t physical_alloc_start = (mod1 + 0xFFF) & ~0xFFF;
+  init_memory(boot_info->mem_upper, physical_alloc_start);
   // unsigned short *vga_buffer = (unsigned short *)0xB8000;
 
   // unsigned short green_pixel = 0x2000 | ' ';
@@ -32,10 +35,6 @@ void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
   //__builtin_trap();
   BOCHS_BREAK();
   puts("JACK IS SUPER COOL");
-  printf("Hi %d. This is super cool!!!. And He says: %s...\n", 102,
-         "wow this is cool");
-  printf("And we got hex: %x!\n", 0xCAFEBAB1);
-  printf("And a literal %%.");
   // Loop through every row and column to fill the screen
   // for (int y = 0; y < VGA_HEIGHT; y++) {
   //  for (int x = 0; x < VGA_WIDTH; x++) {
