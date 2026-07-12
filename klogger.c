@@ -93,14 +93,16 @@ int string_to_string(char *value, char *output) {
 int hex_to_string(uint32_t value, char *output) {
   const char hex_chars[] = "0123456789ABCDEF";
 
-  for (int i = 7; i >= 0; i--) {
+  output[0] = '0';
+  output[1] = 'x';
+  for (int i = 9; i >= 2; i--) {
     int nibble = value & 0x0F;
 
     output[i] = hex_chars[nibble];
 
     value >>= 4;
   }
-  return 8;
+  return 10;
 }
 
 void printf(char *template, ...) {

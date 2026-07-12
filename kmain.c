@@ -34,7 +34,7 @@ void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
   __asm__ volatile("int $0x03");
   //__builtin_trap();
   BOCHS_BREAK();
-  puts("JACK IS SUPER COOL");
+  //puts("\n\nJACK IS SUPER COOL");
   // Loop through every row and column to fill the screen
   // for (int y = 0; y < VGA_HEIGHT; y++) {
   //  for (int x = 0; x < VGA_WIDTH; x++) {
