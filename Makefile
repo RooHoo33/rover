@@ -55,8 +55,8 @@ os.iso: kernel.elf
 	rm -rf /tmp/iso_staging
 build: os.iso
 run: os.iso
-	#qemu-system-i386 -boot d -cdrom os.iso -m 128M -serial stdio -s -S -display none
-	bochs -f bochsrc.txt -dbg
+	qemu-system-i386 -boot d -cdrom os.iso -m 128M -serial stdio -s -S -display none -vnc :0
+	#bochs -f bochsrc.txt -dbg
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@

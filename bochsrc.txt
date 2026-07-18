@@ -1,6 +1,6 @@
 megs:            32
-#display_library: vncsrv
-display_library: term
+display_library: vncsrv
+#display_library: term
 ata0-master:     type=cdrom, path=os.iso, status=inserted
 boot:            cdrom
 log:             bochslog.txt

@@ -1,5 +1,6 @@
 
 
+#include "serial.h"
 #include "stdlib.h"
 
 #define VGA_WIDTH 80
@@ -35,6 +36,8 @@ void shift_lines_up() {
 }
 
 void write_stdout(char *output) {
+  write_serial_str(output);
+  return;
 
   while (*output != '\0') {
     if (current_line == VGA_HEIGHT) {

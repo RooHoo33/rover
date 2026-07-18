@@ -6,6 +6,7 @@
 #include "keyboard.h"
 #include "klogger.h"
 #include "memory.h"
+#include "serial.h"
 #include "stdlib.h"
 
 // Define the screen dimensions for standard VGA text mode
@@ -13,6 +14,7 @@
 // #define VGA_HEIGHT 25
 
 void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
+  init_serial();
   printf("Magic number: %x\n", magic_number);
   clear_screen();
   initGdt();
