@@ -1,5 +1,6 @@
 #include "isr.h"
 #include "idt.h"
+#include "klogger.h"
 
 /* These are function prototypes for all of the exception
  *  handlers: The first 32 entries in the IDT are reserved
@@ -135,12 +136,12 @@ char message[] = "x:oh no we got";
 void fault_handler(struct regs *r) {
   message[0] = r->int_no + '0';
   /* Is this a fault whose number is from 0 to 31? */
-  //puts(message);
+  // puts(message);
   if (r->int_no < 32) {
     /* Display the description for the Exception that occurred.
      *  In this tutorial, we will simply halt the system using an
      *  infinite loop */
-    puts(exception_messages[r->int_no]);
+    printf(exception_messages[r->int_no]);
     // puts(" Exception. System Halted!\n");
     // for (;;)
     //  ;

@@ -20,18 +20,39 @@ uint32_t get_unused_frame() {
       if ((page_frame_bitmap & (1U << j)) == 0) {
         (physical_memory_bitmap[i] |= (1U << ((j) % 8)));
         int32_t frame_physical_location = (page_frame_min + (i * 8) + j) * 4096;
-        // int32_t frame_physical_location =
-        //     page_frame_min + (((i * 8) + j) * 4096);
-        printf("Allocated Page ME %d BM %d Phy %x\n", i, j,
-               frame_physical_location);
         return frame_physical_location;
       }
     }
   }
-  printf("We found no places :(\n");
   return 0;
 }
 
+void map_kernel_code() {
+  uint32_t virt = (uint32_t)&kernel_virtual_start;
+  uint32_t phys = (uint32_t)&kernel_physical_start;
+  uint32_t end_virt = (uint32_t)&kernel_virtual_end;
+
+  // align on 4k memory address
+  end_virt = (end_virt + 0xFFF) & ~0xFFF;
+
+  while (virt < end_virt) {
+    map_virtual_memory_from_frame(virt, phys);
+
+    // Move to the next 4KB page
+    virt += 4096;
+    phys += 4096;
+  }
+}
+
+static inline void flush_tlb() {
+  uint32_t cr3;
+  asm volatile("mov %%cr3, %0" : "=r"(cr3));
+  asm volatile("mov %0, %%cr3" ::"r"(cr3));
+}
+
+void invalidate(uint32_t virtual_addresss) {
+  asm volatile("invlpg %0" ::"m"(virtual_addresss));
+}
 void map_virtual_memory_from_frame(uint32_t virtual_memory_addr,
                                    uint32_t frame_physical_addr) {
   uint32_t page_directory_index = virtual_memory_addr >> 22;
@@ -48,6 +69,7 @@ void map_virtual_memory_from_frame(uint32_t virtual_memory_addr,
     memset(new_table_virtual, 0, 4096);
   }
 
+  // invalidate(virtual_memory_addr);
   uint32_t *page_table =
       (uint32_t *)(0xFFC00000 + (page_directory_index * 0x1000));
   page_table[page_table_index] =
@@ -62,10 +84,6 @@ void init_physical_memory(uint32_t memory_high, uint32_t physical_alloc_start) {
   memset(physical_memory_bitmap, 0, sizeof(physical_memory_bitmap));
 }
 
-void invalidate(uint32_t virtual_addresss) {
-  asm volatile("invlpg %0" ::"m"(virtual_addresss));
-}
-
 void init_memory(uint32_t memory_high, uint32_t physical_alloc_start) {
   initial_page_dir[0] = 0;
   invalidate(0);
@@ -76,6 +94,8 @@ void init_memory(uint32_t memory_high, uint32_t physical_alloc_start) {
   memset(page_directories, 0, sizeof(page_directories));
   memset(page_directories_used, 0, NUM_PAGES_DIRS);
 
-  uint32_t *a = (uint32_t *)0x00400000;
-  *a = 100;
+  map_kernel_code();
+  flush_tlb();
+  // uint32_t *a = (uint32_t *)0x00400000;
+  //*a = 100;
 }

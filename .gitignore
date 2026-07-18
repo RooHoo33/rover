@@ -4,5 +4,6 @@
 *.elf
 *.iso
 bochslog.txt
+Bochs/
 
 .DS_Store

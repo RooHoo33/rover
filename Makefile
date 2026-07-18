@@ -58,6 +58,9 @@ run: os.iso
 	qemu-system-i386 -boot d -cdrom os.iso -m 128M -serial stdio -s -S -display none -vnc :0
 	#bochs -f bochsrc.txt -dbg
 
+qemu: os.iso
+	qemu-system-i386 -boot d -cdrom os.iso -m 128M -serial stdio  -display none -vnc :0 -no-reboot
+
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 

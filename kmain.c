@@ -5,10 +5,12 @@
 #include "isr.h"
 #include "keyboard.h"
 #include "klogger.h"
+#include "kmalloc.h"
 #include "memory.h"
 #include "serial.h"
 #include "stdlib.h"
 
+extern uint32_t kernel_physical_end;
 // Define the screen dimensions for standard VGA text mode
 // #define VGA_WIDTH 80
 // #define VGA_HEIGHT 25
@@ -27,16 +29,31 @@ void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
   //
   //
   //
-  uint32_t mod1 = *(uint32_t *)(boot_info->mods_addr + 4);
-  uint32_t physical_alloc_start = (mod1 + 0xFFF) & ~0xFFF;
-  init_memory(boot_info->mem_upper, physical_alloc_start);
-  // unsigned short *vga_buffer = (unsigned short *)0xB8000;
+  printf("Started keyboard, gdt, idt, and irs and irq\n");
+  printf("Kernel Physical End: %x, Memory High %x\n",
+         (uint32_t)&kernel_physical_end, boot_info->mem_upper);
+  init_memory(boot_info->mem_upper, (uint32_t)&kernel_physical_end);
+
+  printf("Got memory all set up\n");
+  init_kmalloc();
+
+  int32_t *num = (int32_t *)kmalloc(4100);
+  *num = 123;
+
+  *num += 1;
+
+  int32_t *point = (int32_t *)(((int32_t)&num) + 4000);
+  *point = 0;
+  *point += 12;
+
+  printf("num %d, point %d\n", *num, *point);
+
+  //  unsigned short *vga_buffer = (unsigned short *)0xB8001;
 
   // unsigned short green_pixel = 0x2000 | ' ';
-  __asm__ volatile("int $0x03");
-  //__builtin_trap();
-  BOCHS_BREAK();
-  //puts("\n\nJACK IS SUPER COOL");
+  //__asm__ volatile("int $0x03");
+  // BOCHS_BREAK();
+  // puts("\n\nJACK IS SUPER COOL");
   // Loop through every row and column to fill the screen
   // for (int y = 0; y < VGA_HEIGHT; y++) {
   //  for (int x = 0; x < VGA_WIDTH; x++) {

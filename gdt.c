@@ -19,8 +19,6 @@ void initGdt() {
   setGdtGate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); // kernel data segment
   setGdtGate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); // user code segment
   setGdtGate(4, 0, 0xFFFFFFFF, 0x9A, 0xCF); // user data segment
-  BOCHS_BREAK();
-  //  gdt_flush2(&gdt_pointer);
   gdt_flush(&gdt_pointer);
 }
 void setGdtGate(uint32_t number, uint32_t base, uint32_t limit, uint8_t access,
