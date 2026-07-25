@@ -24,6 +24,7 @@ int init_serial(void) {
   return 0;
 }
 
+/* Check the Line Status Register to see if the transmit buffer is empty */
 int is_transmit_empty(void) { return inportb(COM1 + 5) & 0x20; }
 
 void write_serial_char(char c) {

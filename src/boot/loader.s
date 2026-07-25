@@ -1,10 +1,6 @@
 [BITS 32]
 global loader                  
 extern kmain
-extern kernel_virtual_start
-extern kernel_virtual_end
-extern kernel_physical_start
-extern kernel_physical_end
 
 MAGIC_NUMBER equ 0x1BADB002    
 FLAGS        equ 0x00000003    ; Bit 0: Align modules on page boundaries

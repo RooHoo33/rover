@@ -26,6 +26,9 @@ void kmain(uint32_t magic_number, struct multiboot_info *boot_info) {
   // timer_install();
   keyboard_install();
   __asm__ __volatile__("sti"); // re-enable isr inturupts
+  //
+  //
+  //
   printf("Started keyboard, gdt, idt, and irs and irq\n");
   printf("Kernel Physical End: %x, Memory High %x\n",
          (uint32_t)&kernel_physical_end, boot_info->mem_upper);

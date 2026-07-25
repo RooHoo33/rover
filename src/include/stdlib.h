@@ -28,8 +28,6 @@ typedef signed int ssize_t;
 void puts(char *);
 void clear_screen();
 
-extern init_serial();
-
 unsigned char inportb(unsigned short _port);
 void outportb(unsigned short _port, unsigned char _data);
 

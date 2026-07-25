@@ -1,9 +1,15 @@
 
+BUILD_DIR = out
 
-C_SOURCES = $(wildcard *.c)
-ASM_SOURCES = $(wildcard *.s)
+SRCDIR   := src
 
-OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES)) $(patsubst %.s, %.o, $(ASM_SOURCES))
+C_SOURCES     := $(shell find $(SRCDIR) -type f -name "*.c")
+ASM_SOURCES := $(shell find $(SRCDIR) -type f -name "*.s")
+
+C_OBJS   := $(patsubst $(SRCDIR)/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
+ASM_OBJS := $(patsubst $(SRCDIR)/%.s, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
+
+OBJECTS := $(C_OBJS) $(ASM_OBJS)
 
 HEADERS = $(wildcard *.h)
 
@@ -11,10 +17,13 @@ HEADERS = $(wildcard *.h)
 CC = i686-linux-gnu-gcc
 LD = i686-linux-gnu-ld
 
+INC_DIRS := $(shell find $(SRCDIR) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+
 # Keep your existing flags intact
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
          -nodefaultlibs -Wall -Wextra -Werror -g
-CFLAGS += -m32 -fno-pie -fno-pic -ffreestanding -nostdlib -fverbose-asm -Wno-error=div-by-zero
+CFLAGS += -m32 -fno-pie -fno-pic -ffreestanding -nostdlib -fverbose-asm -Wno-error=div-by-zero $(INC_FLAGS) -MMD -MP
 LDFLAGS = -T link.ld -m elf_i386 -g
 AS = nasm
 ASFLAGS = -f elf32 -g
@@ -64,8 +73,22 @@ qemu: os.iso
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.s
+$(BUILD_DIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Assembles src/boot/header.s into out/boot/header.o
+$(BUILD_DIR)/%.o: $(SRCDIR)/%.s
+	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
+clangd:
+	rm -f compile_flags.txt
+	@echo "-m32" >> compile_flags.txt
+	@echo "-ffreestanding" >> compile_flags.txt
+	@for dir in $$(find src -type d); do \
+		echo "-I$$dir" >> compile_flags.txt; \
+	done
+
 clean:
-	rm -rf *.o kernel.elf os.iso iso/
+	rm -rf *.o kernel.elf os.iso iso/ out/
